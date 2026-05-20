@@ -1,0 +1,6 @@
+'use client';
+import { useState } from 'react';
+export default function Page(){const[file,setFile]=useState<File|null>(null);const[q,setQ]=useState('');const[answer,setAnswer]=useState('');const[status,setStatus]=useState('');
+async function upload(){if(!file)return;const fd=new FormData();fd.append('file',file);setStatus('Indexing PDF...');const r=await fetch('/api/upload',{method:'POST',body:fd});const d=await r.json();setStatus(d.message||d.error)}
+async function ask(){setAnswer('Thinking...');const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q})});const d=await r.json();setAnswer(d.answer||d.error)}
+return <main style={{maxWidth:760,margin:'60px auto',fontFamily:'Arial',padding:24}}><h1>AI Document Assistant</h1><p>Upload a PDF and ask questions using RAG.</p><input type="file" accept="application/pdf" onChange={e=>setFile(e.target.files?.[0]||null)}/><button onClick={upload}>Upload & Index</button><p>{status}</p><textarea value={q} onChange={e=>setQ(e.target.value)} placeholder="Ask about the document" style={{width:'100%',height:100,marginTop:20}}/><br/><button onClick={ask}>Ask</button><pre style={{whiteSpace:'pre-wrap',background:'#f4f4f4',padding:16}}>{answer}</pre></main>}
